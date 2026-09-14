@@ -1,0 +1,2871 @@
+schema: '2.0'
+stages:
+  prepare_runs:
+    cmd: python -m figures.stages.prepare_runs --human-snapshot 
+      figures/data/human_snapshot.json --output-dir figures/data
+    deps:
+    - path: ../data/eval_logs/eval-set-my-custom-model
+      hash: md5
+      md5: 60898b3949fb875c2988f01fedea0b0e.dir
+      size: 178314
+      nfiles: 2
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 40bdd589c8c37d2d2d2c5180f37892ba
+      size: 274073
+    - path: figures/stages/prepare_runs.py
+      hash: md5
+      md5: 1565707b6b927343f03556cd68f75afb
+      size: 7784
+    - path: lib/constants.py
+      hash: md5
+      md5: 92e27d4799399f7c41ed07f3dcc4e1e5
+      size: 4688
+    - path: lib/corrections.py
+      hash: md5
+      md5: 166b373aaffb63948f129e2daaa77471
+      size: 9339
+    - path: lib/data.py
+      hash: md5
+      md5: 3edd4f31e2e62d1cbc707855179c070f
+      size: 16525
+    - path: lib/eval_sets.py
+      hash: md5
+      md5: a1fee4d6ab3fe1855fcaa2c65a0fd206
+      size: 778
+    - path: lib/results.py
+      hash: md5
+      md5: c8ea580f41c20ce90bef27b7ef48de5e
+      size: 28018
+    - path: lib/trendline.py
+      hash: md5
+      md5: e82e881d2c10426fa615772a4c4190bb
+      size: 22743
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/best_available_times.json
+      hash: md5
+      md5: bf7e7aebb85c592341c3ef81946215be
+      size: 27557
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 1ee3a390277c2fecef9dce1ee7bf239a
+      size: 4438
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: a5b94aa51bbe4d580ce32ea188400210
+      size: 22335
+  snapshot_human_data:
+    cmd: python -m figures.stages.snapshot_human_data --output 
+      figures/data/human_snapshot.json
+    deps:
+    - path: figures/stages/snapshot_human_data.py
+      hash: md5
+      md5: d4d8a1064422cb8124318c8e9688f9e5
+      size: 431
+    - path: lib/api.py
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: lib/corrections.py
+      hash: md5
+      md5: 166b373aaffb63948f129e2daaa77471
+      size: 9339
+    outs:
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 40bdd589c8c37d2d2d2c5180f37892ba
+      size: 274073
+  bootstrap_runs_2M:
+    cmd: python -m figures.stages.bootstrap --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      model_estimate_minutes --token-budget null --n-bootstrap 1000 --output 
+      figures/data/bootstrap/runs_2M.parquet
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/bootstrap.py
+      hash: md5
+      md5: f797d2f4ed2360521c42a01a5f74a727
+      size: 3265
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        bootstrap:
+          n_iterations: 1000
+          seed: 42
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/bootstrap/runs_2M.parquet
+      hash: md5
+      md5: 4088927c0d84f181726211284865f923
+      size: 312666
+  fit_summaries_runs_2M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --model-runs figures/data/model_runs.parquet 
+      --task-difficulties figures/data/task_difficulties.parquet 
+      --difficulty-col model_estimate_minutes --bootstrap 
+      figures/data/bootstrap/runs_2M.parquet --output 
+      figures/data/model_summaries_runs_2M.parquet
+    deps:
+    - path: figures/data/bootstrap/runs_2M.parquet
+      hash: md5
+      md5: 4088927c0d84f181726211284865f923
+      size: 312666
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/model_summaries_runs_2M.parquet
+      hash: md5
+      md5: f2e92e2b3dc591d036e4b7ec52366a81
+      size: 10841
+  bootstrap_runs_human_2M:
+    cmd: python -m figures.stages.bootstrap --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --token-budget null --n-bootstrap 1000 --output 
+      figures/data/bootstrap/runs_human_2M.parquet
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 61ef4a54bbc2a7966e745f4b30ca068c
+      size: 4483
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: bade8038bbc56add48ca6817ed2bc8c9
+      size: 22345
+    - path: figures/stages/bootstrap.py
+      hash: md5
+      md5: cafe91bfab555ca6b15c7d2c7e148017
+      size: 3155
+    - path: lib/data.py
+      hash: md5
+      md5: 0f50a689eae9fc72b52000549166e856
+      size: 16568
+    params:
+      figures/params.yaml:
+        bootstrap:
+          n_iterations: 1000
+          seed: 42
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 86d1b40b48facce76e59df69e9740f27
+      size: 2670
+  fit_summaries_human_2M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --model-runs figures/data/model_runs.parquet 
+      --task-difficulties figures/data/task_difficulties.parquet 
+      --difficulty-col best_available_minutes --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/model_summaries_human_2M.parquet
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 86d1b40b48facce76e59df69e9740f27
+      size: 2670
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 61ef4a54bbc2a7966e745f4b30ca068c
+      size: 4483
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: bade8038bbc56add48ca6817ed2bc8c9
+      size: 22345
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 41049b1509f3cde0509bbbb3a6ca943d
+      size: 6271
+    - path: lib/data.py
+      hash: md5
+      md5: 0f50a689eae9fc72b52000549166e856
+      size: 16568
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: a11a27caae508cee497b99903f407af1
+      size: 9310
+  fit_trendline_human_2M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/model_summaries_human_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/trendline_params_human_2M.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 1b552f96e4575b4e1a43648f52c89ab8
+      size: 49615
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: a37b8455188cb6dee33cb10edc351be6
+      size: 9599
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 124f206e50f507ce6313dcc3ea8da706
+      size: 4781
+    outs:
+    - path: figures/data/trendline_params_human_2M.json
+      hash: md5
+      md5: c787a99fd1199d8213b400cb7076693e
+      size: 536
+  plot_token_budget:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.plot_token_budget --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --summaries 
+      figures/data/model_summaries_human_2M.parquet --10m-samples 
+      ../data/keep/10m_samples.pkl --os-cache ../data/keep/os_data_cache.pkl 
+      --output figures/out/token_budget_sensitivity.png --output-extended 
+      figures/out/token_budget_extended_10m.png
+    deps:
+    - path: ../data/keep/10m_samples.pkl
+      hash: md5
+      md5: cec2b1b293c2f130ce21439dc1137842
+      size: 3754
+    - path: ../data/keep/os_data_cache.pkl
+      hash: md5
+      md5: 474f032a5e13258e23a0372592ee581b
+      size: 1772776
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 86a0a460fe2dd394fbc0f1db3dfe5319
+      size: 10723
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    - path: lib/irt.py
+      hash: md5
+      md5: d377e7dbb8d7acf45049adece81218c6
+      size: 68467
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/token_budget_extended_10m.png
+      hash: md5
+      md5: c355963558ab2476d44b1a5a2ec0c134
+      size: 441987
+    - path: figures/out/token_budget_sensitivity.png
+      hash: md5
+      md5: fddb78b49652fc8917d5827324c5cc70
+      size: 434030
+  plot_token_subset_analysis:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.plot_token_subset_analysis --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --ten-m-cache 
+      ../data/keep/10m_samples.pkl --output 
+      figures/out/token_subset_analysis.png
+    deps:
+    - path: ../data/keep/10m_samples.pkl
+      hash: md5
+      md5: cec2b1b293c2f130ce21439dc1137842
+      size: 3754
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    - path: lib/irt.py
+      hash: md5
+      md5: d377e7dbb8d7acf45049adece81218c6
+      size: 68467
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/token_subset_analysis.png
+      hash: md5
+      md5: 60110fa4180600f1f2cb1123f809c27b
+      size: 463848
+  bootstrap_runs_human_1M:
+    cmd: python -m figures.stages.bootstrap --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --token-budget 1000000 --n-bootstrap 1000 --output 
+      figures/data/bootstrap/runs_human_1M.parquet
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/bootstrap.py
+      hash: md5
+      md5: f797d2f4ed2360521c42a01a5f74a727
+      size: 3265
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        bootstrap:
+          n_iterations: 1000
+          seed: 42
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/bootstrap/runs_human_1M.parquet
+      hash: md5
+      md5: 73f8b69d2d755d777eb5da81b93fd403
+      size: 303904
+  bootstrap_runs_1M:
+    cmd: python -m figures.stages.bootstrap --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      model_estimate_minutes --token-budget 1000000 --n-bootstrap 1000 --output 
+      figures/data/bootstrap/runs_1M.parquet
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/bootstrap.py
+      hash: md5
+      md5: f797d2f4ed2360521c42a01a5f74a727
+      size: 3265
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        bootstrap:
+          n_iterations: 1000
+          seed: 42
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/bootstrap/runs_1M.parquet
+      hash: md5
+      md5: 8339b4ee0ecca89d5cee337f24b78204
+      size: 312688
+  prepare_10m_variant:
+    cmd: python -m figures.stages.prepare_10m_variant --model-runs 
+      figures/data/model_runs.parquet --ten-m-cache ../data/keep/10m_samples.pkl
+      --output figures/data/model_runs_gpt53_10M.parquet
+    deps:
+    - path: ../data/keep/10m_samples.pkl
+      hash: md5
+      md5: cec2b1b293c2f130ce21439dc1137842
+      size: 3754
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/stages/prepare_10m_variant.py
+      hash: md5
+      md5: 1b733ee531a435e7820f5a7874fd1e40
+      size: 2218
+    outs:
+    - path: figures/data/model_runs_gpt53_10M.parquet
+      hash: md5
+      md5: 1a53c0cb7bf5300e7bdaadbef72e4818
+      size: 59860
+  bootstrap_runs_human_2M_gpt53_10M:
+    cmd: python -m figures.stages.bootstrap --model-runs 
+      figures/data/model_runs_gpt53_10M.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --token-budget null --n-bootstrap 1000 --output 
+      figures/data/bootstrap/runs_human_2M_gpt53_10M.parquet
+    deps:
+    - path: figures/data/model_runs_gpt53_10M.parquet
+      hash: md5
+      md5: 1a53c0cb7bf5300e7bdaadbef72e4818
+      size: 59860
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/bootstrap.py
+      hash: md5
+      md5: f797d2f4ed2360521c42a01a5f74a727
+      size: 3265
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        bootstrap:
+          n_iterations: 1000
+          seed: 42
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/bootstrap/runs_human_2M_gpt53_10M.parquet
+      hash: md5
+      md5: f89c657adc61f3efb5c38b0a349e8d86
+      size: 303818
+  fit_summaries_human_2M_gpt53_10M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --model-runs 
+      figures/data/model_runs_gpt53_10M.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --bootstrap 
+      figures/data/bootstrap/runs_human_2M_gpt53_10M.parquet --output 
+      figures/data/model_summaries_human_2M_gpt53_10M.parquet
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M_gpt53_10M.parquet
+      hash: md5
+      md5: f89c657adc61f3efb5c38b0a349e8d86
+      size: 303818
+    - path: figures/data/model_runs_gpt53_10M.parquet
+      hash: md5
+      md5: 1a53c0cb7bf5300e7bdaadbef72e4818
+      size: 59860
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/model_summaries_human_2M_gpt53_10M.parquet
+      hash: md5
+      md5: 78a56333eb85f15026c4ae265ff31fae
+      size: 10831
+  irt_grid_runs:
+    cmd: python -m figures.stages.irt_grid --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      model_estimate_minutes --title-label "Model-Estimated Task Length" 
+      --output figures/out/irt_grid_runs.png
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    - path: lib/irt.py
+      hash: md5
+      md5: cd5dfe23a0eaf7d9c5b4e2d5db18a11f
+      size: 69013
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        irt_grid:
+          exclude_models: []
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/irt_grid_runs.png
+      hash: md5
+      md5: d7d78f61b48c10542fd7e6c0d5a718b0
+      size: 1215652
+  irt_grid_runs_human:
+    cmd: python -m figures.stages.irt_grid --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --title-label "Human-Derived Task Length" --output 
+      figures/out/irt_grid_runs_human.png
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    - path: lib/irt.py
+      hash: md5
+      md5: cd5dfe23a0eaf7d9c5b4e2d5db18a11f
+      size: 69013
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        irt_grid:
+          exclude_models: []
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/irt_grid_runs_human.png
+      hash: md5
+      md5: 9ee1d7d1781a87b6ff1ec1e9e68d4828
+      size: 1104102
+  trendline_p50_runs_human_2M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.trendline --summaries 
+      figures/data/model_summaries_human_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --token-budget null 
+      --success-percent 50 --title-label "Human-Derived" --output 
+      figures/out/trendline_p50_runs_human_2M.png
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 1b552f96e4575b4e1a43648f52c89ab8
+      size: 49615
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: a37b8455188cb6dee33cb10edc351be6
+      size: 9599
+    - path: lib/trendline.py
+      hash: md5
+      md5: 91b92c7ddcae7f803f7ac20165d21a8a
+      size: 22743
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/trendline_p50_runs_human_2M.png
+      hash: md5
+      md5: 8184f0453839ebd3744ee45d314b2800
+      size: 227274
+  trendline_p50_runs_human_1M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.trendline --summaries 
+      figures/data/model_summaries_human_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_1M.parquet --token-budget 1000000 
+      --success-percent 50 --title-label "Human-Derived" --output 
+      figures/out/trendline_p50_runs_human_1M.png
+    deps:
+    - path: figures/data/bootstrap/runs_human_1M.parquet
+      hash: md5
+      md5: 73f8b69d2d755d777eb5da81b93fd403
+      size: 303904
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 00014d991545abdd00a8d5816f889e31
+      size: 10831
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/trendline_p50_runs_human_1M.png
+      hash: md5
+      md5: bc5842c510375ea68daa831be2e191d4
+      size: 295444
+  trendline_p50_runs_2M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.trendline --summaries 
+      figures/data/model_summaries_runs_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_2M.parquet --token-budget null 
+      --success-percent 50 --title-label "Model-Estimated" --output 
+      figures/out/trendline_p50_runs_2M.png
+    deps:
+    - path: figures/data/bootstrap/runs_2M.parquet
+      hash: md5
+      md5: 4088927c0d84f181726211284865f923
+      size: 312666
+    - path: figures/data/model_summaries_runs_2M.parquet
+      hash: md5
+      md5: f2e92e2b3dc591d036e4b7ec52366a81
+      size: 10841
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/trendline_p50_runs_2M.png
+      hash: md5
+      md5: 3b199e0b8b394f1eb93aaf160bdc5607
+      size: 242039
+  trendline_p50_runs_1M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.trendline --summaries 
+      figures/data/model_summaries_runs_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_1M.parquet --token-budget 1000000 
+      --success-percent 50 --title-label "Model-Estimated" --output 
+      figures/out/trendline_p50_runs_1M.png
+    deps:
+    - path: figures/data/bootstrap/runs_1M.parquet
+      hash: md5
+      md5: 8339b4ee0ecca89d5cee337f24b78204
+      size: 312688
+    - path: figures/data/model_summaries_runs_2M.parquet
+      hash: md5
+      md5: f2e92e2b3dc591d036e4b7ec52366a81
+      size: 10841
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/trendline_p50_runs_1M.png
+      hash: md5
+      md5: b69eb907dc5cde7667d4f523bcfcc086
+      size: 245553
+  trendline_p80_runs_human_2M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.trendline --summaries 
+      figures/data/model_summaries_human_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --token-budget null 
+      --success-percent 80 --title-label "Human-Derived" --output 
+      figures/out/trendline_p80_runs_human_2M.png
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 00014d991545abdd00a8d5816f889e31
+      size: 10831
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/trendline_p80_runs_human_2M.png
+      hash: md5
+      md5: 751473958342540cb90d02c840cb5567
+      size: 283577
+  trendline_p80_runs_2M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.trendline --summaries 
+      figures/data/model_summaries_runs_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_2M.parquet --token-budget null 
+      --success-percent 80 --title-label "Model-Estimated" --output 
+      figures/out/trendline_p80_runs_2M.png
+    deps:
+    - path: figures/data/bootstrap/runs_2M.parquet
+      hash: md5
+      md5: 4088927c0d84f181726211284865f923
+      size: 312666
+    - path: figures/data/model_summaries_runs_2M.parquet
+      hash: md5
+      md5: f2e92e2b3dc591d036e4b7ec52366a81
+      size: 10841
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/trendline_p80_runs_2M.png
+      hash: md5
+      md5: f9a46bd8cdcd67e2a784a10c303e3ea8
+      size: 263652
+  trendline_combined_human_2M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.trendline_combined --summaries 
+      figures/data/model_summaries_human_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/out/trendline_p50_runs_human_2M_combined.png
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 00014d991545abdd00a8d5816f889e31
+      size: 10831
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/trendline_p50_runs_human_2M_combined.png
+      hash: md5
+      md5: 5416bb2ce586363753acbdeb9c142df2
+      size: 502579
+  trendline_combined_runs_2M:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.trendline_combined --summaries 
+      figures/data/model_summaries_runs_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_2M.parquet --output 
+      figures/out/trendline_p50_runs_2M_combined.png
+    deps:
+    - path: figures/data/bootstrap/runs_2M.parquet
+      hash: md5
+      md5: 4088927c0d84f181726211284865f923
+      size: 312666
+    - path: figures/data/model_summaries_runs_2M.parquet
+      hash: md5
+      md5: f2e92e2b3dc591d036e4b7ec52366a81
+      size: 10841
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/trendline_p50_runs_2M_combined.png
+      hash: md5
+      md5: bacd8a2e1edc74d6bbffacf05a2ee711
+      size: 499693
+  irt_grid_completions_only:
+    cmd: python -m figures.stages.irt_grid --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col completion_minutes
+      --title-label "Study Completions Only" --output 
+      figures/out/irt_grid_completions_only.png
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    - path: lib/irt.py
+      hash: md5
+      md5: cd5dfe23a0eaf7d9c5b4e2d5db18a11f
+      size: 69013
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        irt_grid:
+          exclude_models: []
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/irt_grid_completions_only.png
+      hash: md5
+      md5: 279233bc748188ca427cca5193d881d1
+      size: 986399
+  plot_completions_only_comparison:
+    cmd: python -m figures.stages.plot_completions_only_comparison --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --model "GPT-5.5,Opus 4.6" --output
+      figures/out/completions_only_comparison.png
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: lib/irt.py
+      hash: md5
+      md5: cd5dfe23a0eaf7d9c5b4e2d5db18a11f
+      size: 69013
+    params:
+      figures/params.yaml:
+        frontier_models: GPT-5.5,Opus 4.6
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/completions_only_comparison.png
+      hash: md5
+      md5: 25218080cd2b5fc0c618c1f5af61edaf
+      size: 309142
+  plot_regularisation_comparison:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.plot_regularisation_comparison --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --summaries 
+      figures/data/model_summaries_human_2M.parquet --stats-output 
+      figures/data/regularisation_comparison.json --output 
+      figures/out/regularisation_comparison.png
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 00014d991545abdd00a8d5816f889e31
+      size: 10831
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: lib/irt.py
+      hash: md5
+      md5: cd5dfe23a0eaf7d9c5b4e2d5db18a11f
+      size: 69013
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/data/regularisation_comparison.json
+      hash: md5
+      md5: dd60a55b128b5e2307ac19f3d0961fe6
+      size: 6235
+    - path: figures/out/regularisation_comparison.png
+      hash: md5
+      md5: 33d32ced70430f8fc083c241a42fea98
+      size: 201795
+  plot_bootstrap_models_example:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.plot_bootstrap_models_example --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --summaries 
+      figures/data/model_summaries_human_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/out/bootstrap_models_example.png
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 00014d991545abdd00a8d5816f889e31
+      size: 10831
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/bootstrap_models_example.png
+      hash: md5
+      md5: 3fccf906152c2e0304c9ba1f88f784ba
+      size: 248698
+  prepare_sensitivity_variants:
+    cmd: python -m figures.stages.prepare_sensitivity_variants --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --human-snapshot 
+      figures/data/human_snapshot.json --output-dir figures/data/sensitivity
+    deps:
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 40bdd589c8c37d2d2d2c5180f37892ba
+      size: 274073
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: lib/corrections.py
+      hash: md5
+      md5: 21e45126337c4935ffb81624c2506ef9
+      size: 9668
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    outs:
+    - path: figures/data/sensitivity/runs_human_actuals_only.parquet
+      hash: md5
+      md5: 32f802acd7fb0932dc2142bd9997b857
+      size: 27718
+    - path: figures/data/sensitivity/runs_human_completions_only.parquet
+      hash: md5
+      md5: 0cfd157e53cc9fe669e7f29b87b9165d
+      size: 21955
+    - path: figures/data/sensitivity/runs_human_cybench_adjusted.parquet
+      hash: md5
+      md5: 2effc8ca908093c0bc540daade0b15df
+      size: 49624
+    - path: figures/data/sensitivity/runs_human_model_est_full.parquet
+      hash: md5
+      md5: 7df681013d94f6a3766ea58ec2bb341d
+      size: 76523
+    - path: figures/data/sensitivity/runs_human_model_est_human_taskset.parquet
+      hash: md5
+      md5: e9fb8222a9c7bb6805c743a088db3fb1
+      size: 44926
+    - path: figures/data/sensitivity/runs_human_no_cvebench.parquet
+      hash: md5
+      md5: 2d08e9f37d2375e50d1dc88e11640ed4
+      size: 47387
+    - path: figures/data/sensitivity/runs_human_no_cybashbench.parquet
+      hash: md5
+      md5: cc46762b924854f52dbdf60634b7c636
+      size: 42672
+    - path: figures/data/sensitivity/runs_human_no_cybench.parquet
+      hash: md5
+      md5: b41336b3e4a1d718a309980d36a3b70e
+      size: 43146
+    - path: figures/data/sensitivity/runs_human_no_cybench_fb.parquet
+      hash: md5
+      md5: 1768bd22e971d36594fa4419b0cd892e
+      size: 48531
+    - path: figures/data/sensitivity/runs_human_no_cybergym.parquet
+      hash: md5
+      md5: c06431ff5417d18c900a5b81168c8c96
+      size: 34770
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_01.parquet
+      hash: md5
+      md5: f85f66bead632036ee3f80961d9f3d11
+      size: 49472
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_02.parquet
+      hash: md5
+      md5: 9c9737b18987857584e7b6534d663d87
+      size: 48489
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_03.parquet
+      hash: md5
+      md5: f30255fe63ab9ba1703124b943abde37
+      size: 47675
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_04.parquet
+      hash: md5
+      md5: 10a3e3e932a0d8f790e63f5035e3d855
+      size: 47344
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_05.parquet
+      hash: md5
+      md5: 79c8d4f9a5acb9ffa6043969f454f4ef
+      size: 48308
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_06.parquet
+      hash: md5
+      md5: 1088305b0f87b60e2f0b629eec6e7a2a
+      size: 46771
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_07.parquet
+      hash: md5
+      md5: 3fc3e105346b36f27638aaab91dbca8d
+      size: 49481
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_08.parquet
+      hash: md5
+      md5: 4ba42077266a4fd6ceb70361c89ec328
+      size: 41089
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_09.parquet
+      hash: md5
+      md5: 7a0c4f18a2558b8c3b857513c6898741
+      size: 49485
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_10.parquet
+      hash: md5
+      md5: f0e0fce7393c2e07625c9f909f349eec
+      size: 44272
+    - path: figures/data/sensitivity/runs_human_no_intercode_ctf.parquet
+      hash: md5
+      md5: 0b4e01575b61cf9d32569fc3e6763dda
+      size: 42356
+    - path: figures/data/sensitivity/runs_human_no_nl2bash.parquet
+      hash: md5
+      md5: 14288a92ce693320e7462be55989ac1f
+      size: 48194
+    - path: figures/data/sensitivity/runs_human_no_nyuctf.parquet
+      hash: md5
+      md5: 554705cd79a43fcb33615d001075702e
+      size: 44129
+    - path: figures/data/sensitivity/sensitivity_summary.json
+      hash: md5
+      md5: 719fbe5a1292989d20706fcbd24271c7
+      size: 2023
+  sensitivity_summaries@completions_only:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_completions_only.parquet --output 
+      figures/data/sensitivity/summaries_completions_only.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_completions_only.parquet
+      hash: md5
+      md5: 0cfd157e53cc9fe669e7f29b87b9165d
+      size: 21955
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_completions_only.parquet
+      hash: md5
+      md5: d962ad3c851adcffc3edd4f4a830431e
+      size: 9897
+  sensitivity_summaries@actuals_only:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_actuals_only.parquet --output 
+      figures/data/sensitivity/summaries_actuals_only.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_actuals_only.parquet
+      hash: md5
+      md5: 32f802acd7fb0932dc2142bd9997b857
+      size: 27718
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_actuals_only.parquet
+      hash: md5
+      md5: fbd568a8f12f28eb8b313481b0574f85
+      size: 9919
+  sensitivity_summaries@no_cybench_fb:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_no_cybench_fb.parquet --output 
+      figures/data/sensitivity/summaries_no_cybench_fb.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_no_cybench_fb.parquet
+      hash: md5
+      md5: 1768bd22e971d36594fa4419b0cd892e
+      size: 48531
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_no_cybench_fb.parquet
+      hash: md5
+      md5: 7ff6879aa9c4b5ef15d1e9c989894213
+      size: 9897
+  sensitivity_summaries@cybench_adjusted:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_cybench_adjusted.parquet --output 
+      figures/data/sensitivity/summaries_cybench_adjusted.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_cybench_adjusted.parquet
+      hash: md5
+      md5: 2effc8ca908093c0bc540daade0b15df
+      size: 49624
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_cybench_adjusted.parquet
+      hash: md5
+      md5: 27c7600ce75fd96c986a64ced672530d
+      size: 9919
+  sensitivity_summaries@no_cybergym:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_no_cybergym.parquet --output 
+      figures/data/sensitivity/summaries_no_cybergym.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_no_cybergym.parquet
+      hash: md5
+      md5: c06431ff5417d18c900a5b81168c8c96
+      size: 34770
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_no_cybergym.parquet
+      hash: md5
+      md5: 06e7345627233379247056d98dbf637d
+      size: 9917
+  sensitivity_summaries@no_cybench:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_no_cybench.parquet --output 
+      figures/data/sensitivity/summaries_no_cybench.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_no_cybench.parquet
+      hash: md5
+      md5: b41336b3e4a1d718a309980d36a3b70e
+      size: 43146
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_no_cybench.parquet
+      hash: md5
+      md5: 18fe64d3b50f5f20633489a98e10c57a
+      size: 9897
+  sensitivity_summaries@no_cvebench:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_no_cvebench.parquet --output 
+      figures/data/sensitivity/summaries_no_cvebench.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_no_cvebench.parquet
+      hash: md5
+      md5: 2d08e9f37d2375e50d1dc88e11640ed4
+      size: 47387
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_no_cvebench.parquet
+      hash: md5
+      md5: 4c7bfcc5d70c06907ca97ab6308a1ce4
+      size: 9919
+  sensitivity_summaries@no_nyuctf:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_no_nyuctf.parquet --output 
+      figures/data/sensitivity/summaries_no_nyuctf.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_no_nyuctf.parquet
+      hash: md5
+      md5: 554705cd79a43fcb33615d001075702e
+      size: 44129
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_no_nyuctf.parquet
+      hash: md5
+      md5: 2e27bbe03716d892a45e94a22775e858
+      size: 9897
+  sensitivity_summaries@no_intercode_ctf:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_no_intercode_ctf.parquet --output 
+      figures/data/sensitivity/summaries_no_intercode_ctf.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_no_intercode_ctf.parquet
+      hash: md5
+      md5: 0b4e01575b61cf9d32569fc3e6763dda
+      size: 42356
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_no_intercode_ctf.parquet
+      hash: md5
+      md5: 606bcb54a8f765d1914ea2eedb40d0dd
+      size: 9917
+  sensitivity_summaries@no_nl2bash:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_no_nl2bash.parquet --output 
+      figures/data/sensitivity/summaries_no_nl2bash.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_no_nl2bash.parquet
+      hash: md5
+      md5: 14288a92ce693320e7462be55989ac1f
+      size: 48194
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_no_nl2bash.parquet
+      hash: md5
+      md5: 17078b09b0ecf93ad56d4041c2f8b531
+      size: 9919
+  sensitivity_summaries@no_cybashbench:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_summaries --assembled-runs 
+      figures/data/sensitivity/runs_human_no_cybashbench.parquet --output 
+      figures/data/sensitivity/summaries_no_cybashbench.parquet
+    deps:
+    - path: figures/data/sensitivity/runs_human_no_cybashbench.parquet
+      hash: md5
+      md5: cc46762b924854f52dbdf60634b7c636
+      size: 42672
+    - path: figures/stages/_sota.py
+      hash: md5
+      md5: 905ab399a4e5be9f296579a91db87298
+      size: 2161
+    - path: figures/stages/fit_summaries.py
+      hash: md5
+      md5: 2a54695366f94e96507d9b94efbd7ad2
+      size: 5508
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    params:
+      figures/params.yaml:
+        irt.regularization: 1e-05
+    outs:
+    - path: figures/data/sensitivity/summaries_no_cybashbench.parquet
+      hash: md5
+      md5: d100f879e8c9d61856b57a193060bdfd
+      size: 10349
+  sensitivity_trendlines@completions_only:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_completions_only.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_completions_only.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_completions_only.parquet
+      hash: md5
+      md5: d962ad3c851adcffc3edd4f4a830431e
+      size: 9897
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_completions_only.json
+      hash: md5
+      md5: 5c07296debdaf5d0b7f921a8064c94e3
+      size: 962
+  sensitivity_trendlines@actuals_only:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_actuals_only.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_actuals_only.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_actuals_only.parquet
+      hash: md5
+      md5: fbd568a8f12f28eb8b313481b0574f85
+      size: 9919
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_actuals_only.json
+      hash: md5
+      md5: 912d965e7097f4c7c7cab16e1ce60e8e
+      size: 965
+  sensitivity_trendlines@no_cybench_fb:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_no_cybench_fb.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_no_cybench_fb.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_no_cybench_fb.parquet
+      hash: md5
+      md5: 7ff6879aa9c4b5ef15d1e9c989894213
+      size: 9897
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_no_cybench_fb.json
+      hash: md5
+      md5: 13bb1335d6b5e112904726bc369b96b8
+      size: 964
+  sensitivity_trendlines@cybench_adjusted:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_cybench_adjusted.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_cybench_adjusted.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_cybench_adjusted.parquet
+      hash: md5
+      md5: 27c7600ce75fd96c986a64ced672530d
+      size: 9919
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_cybench_adjusted.json
+      hash: md5
+      md5: 88660f7a2ed6b4a068427b0a6b2a22d7
+      size: 963
+  sensitivity_trendlines@no_cybergym:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_no_cybergym.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_no_cybergym.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_no_cybergym.parquet
+      hash: md5
+      md5: 06e7345627233379247056d98dbf637d
+      size: 9917
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_no_cybergym.json
+      hash: md5
+      md5: f3ab09c106bf1ed4946dbc89ddac5f61
+      size: 963
+  sensitivity_trendlines@no_cybench:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_no_cybench.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_no_cybench.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_no_cybench.parquet
+      hash: md5
+      md5: 18fe64d3b50f5f20633489a98e10c57a
+      size: 9897
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_no_cybench.json
+      hash: md5
+      md5: fd8c9ca598162c22686360fc72acb01c
+      size: 963
+  sensitivity_trendlines@no_cvebench:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_no_cvebench.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_no_cvebench.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_no_cvebench.parquet
+      hash: md5
+      md5: 4c7bfcc5d70c06907ca97ab6308a1ce4
+      size: 9919
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_no_cvebench.json
+      hash: md5
+      md5: 2dfbfb0e49e99c4cf3b5f924f153ce74
+      size: 964
+  sensitivity_trendlines@no_nyuctf:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_no_nyuctf.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_no_nyuctf.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_no_nyuctf.parquet
+      hash: md5
+      md5: 2e27bbe03716d892a45e94a22775e858
+      size: 9897
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_no_nyuctf.json
+      hash: md5
+      md5: 4d173f8186b6b3c1a261b6578b0f3c85
+      size: 964
+  sensitivity_trendlines@no_intercode_ctf:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_no_intercode_ctf.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_no_intercode_ctf.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_no_intercode_ctf.parquet
+      hash: md5
+      md5: 606bcb54a8f765d1914ea2eedb40d0dd
+      size: 9917
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_no_intercode_ctf.json
+      hash: md5
+      md5: 180298f7c20e0b9e12b23122d06c9cd9
+      size: 962
+  sensitivity_trendlines@no_nl2bash:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_no_nl2bash.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_no_nl2bash.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_no_nl2bash.parquet
+      hash: md5
+      md5: 17078b09b0ecf93ad56d4041c2f8b531
+      size: 9919
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_no_nl2bash.json
+      hash: md5
+      md5: e93675223c61bfbe3619e312d26e689a
+      size: 964
+  sensitivity_trendlines@no_cybashbench:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.fit_trendline --summaries 
+      figures/data/sensitivity/summaries_no_cybashbench.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/data/sensitivity/trendline_no_cybashbench.json
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: 19815f7e0cd45626aa1c6284cf69fed1
+      size: 303818
+    - path: figures/data/sensitivity/summaries_no_cybashbench.parquet
+      hash: md5
+      md5: d100f879e8c9d61856b57a193060bdfd
+      size: 10349
+    - path: figures/stages/fit_trendline.py
+      hash: md5
+      md5: 852708dd103b6e1345b5e9657573f272
+      size: 4891
+    outs:
+    - path: figures/data/sensitivity/trendline_no_cybashbench.json
+      hash: md5
+      md5: 782e645ad5a23ba750e532ed300d1c58
+      size: 963
+  sensitivity_multiverse:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.sensitivity_multiverse --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --sensitivity-dir 
+      figures/data/sensitivity --n-samples 1000 --frontier-model "GPT-5.5,Opus 
+      4.6" --output figures/data/sensitivity/multiverse_records.json
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/sensitivity/runs_human_actuals_only.parquet
+      hash: md5
+      md5: 32f802acd7fb0932dc2142bd9997b857
+      size: 27718
+    - path: figures/data/sensitivity/runs_human_completions_only.parquet
+      hash: md5
+      md5: 0cfd157e53cc9fe669e7f29b87b9165d
+      size: 21955
+    - path: figures/data/sensitivity/runs_human_cybench_adjusted.parquet
+      hash: md5
+      md5: 2effc8ca908093c0bc540daade0b15df
+      size: 49624
+    - path: figures/data/sensitivity/runs_human_model_est_full.parquet
+      hash: md5
+      md5: 7df681013d94f6a3766ea58ec2bb341d
+      size: 76523
+    - path: figures/data/sensitivity/runs_human_model_est_human_taskset.parquet
+      hash: md5
+      md5: e9fb8222a9c7bb6805c743a088db3fb1
+      size: 44926
+    - path: figures/data/sensitivity/runs_human_no_cvebench.parquet
+      hash: md5
+      md5: 2d08e9f37d2375e50d1dc88e11640ed4
+      size: 47387
+    - path: figures/data/sensitivity/runs_human_no_cybashbench.parquet
+      hash: md5
+      md5: cc46762b924854f52dbdf60634b7c636
+      size: 42672
+    - path: figures/data/sensitivity/runs_human_no_cybench.parquet
+      hash: md5
+      md5: b41336b3e4a1d718a309980d36a3b70e
+      size: 43146
+    - path: figures/data/sensitivity/runs_human_no_cybench_fb.parquet
+      hash: md5
+      md5: 1768bd22e971d36594fa4419b0cd892e
+      size: 48531
+    - path: figures/data/sensitivity/runs_human_no_cybergym.parquet
+      hash: md5
+      md5: c06431ff5417d18c900a5b81168c8c96
+      size: 34770
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_01.parquet
+      hash: md5
+      md5: f85f66bead632036ee3f80961d9f3d11
+      size: 49472
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_02.parquet
+      hash: md5
+      md5: 9c9737b18987857584e7b6534d663d87
+      size: 48489
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_03.parquet
+      hash: md5
+      md5: f30255fe63ab9ba1703124b943abde37
+      size: 47675
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_04.parquet
+      hash: md5
+      md5: 10a3e3e932a0d8f790e63f5035e3d855
+      size: 47344
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_05.parquet
+      hash: md5
+      md5: 79c8d4f9a5acb9ffa6043969f454f4ef
+      size: 48308
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_06.parquet
+      hash: md5
+      md5: 1088305b0f87b60e2f0b629eec6e7a2a
+      size: 46771
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_07.parquet
+      hash: md5
+      md5: 3fc3e105346b36f27638aaab91dbca8d
+      size: 49481
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_08.parquet
+      hash: md5
+      md5: 4ba42077266a4fd6ceb70361c89ec328
+      size: 41089
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_09.parquet
+      hash: md5
+      md5: 7a0c4f18a2558b8c3b857513c6898741
+      size: 49485
+    - path: figures/data/sensitivity/runs_human_no_expert_expert_10.parquet
+      hash: md5
+      md5: f0e0fce7393c2e07625c9f909f349eec
+      size: 44272
+    - path: figures/data/sensitivity/runs_human_no_intercode_ctf.parquet
+      hash: md5
+      md5: 0b4e01575b61cf9d32569fc3e6763dda
+      size: 42356
+    - path: figures/data/sensitivity/runs_human_no_nl2bash.parquet
+      hash: md5
+      md5: 14288a92ce693320e7462be55989ac1f
+      size: 48194
+    - path: figures/data/sensitivity/runs_human_no_nyuctf.parquet
+      hash: md5
+      md5: 554705cd79a43fcb33615d001075702e
+      size: 44129
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/sensitivity_multiverse.py
+      hash: md5
+      md5: a27c1b1024e9ab5a1fcce1f2c9e0cb58
+      size: 13000
+    params:
+      figures/params.yaml:
+        multiverse:
+          weightings:
+          - equal_task_weight
+          - invsqrt_task_weight
+          regularizations:
+          - 0.2
+          - 0.1
+          - 0.02
+          - 0.01
+          - 0.001
+          - 1e-05
+          n_samples: 1000
+    outs:
+    - path: figures/data/sensitivity/multiverse_records.json
+      hash: md5
+      md5: e5d395309635b592a6a44089d4951eb5
+      size: 3762468
+  sensitivity_combined_multiverse:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.sensitivity_combined_multiverse --source-records 
+      figures/data/sensitivity/multiverse_records.json --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --n-samples 1000 --frontier-model 
+      "GPT-5.5,Opus 4.6" --output 
+      figures/data/sensitivity/combined_multiverse_records.json
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/sensitivity/multiverse_records.json
+      hash: md5
+      md5: e5d395309635b592a6a44089d4951eb5
+      size: 3762468
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/sensitivity_combined_multiverse.py
+      hash: md5
+      md5: cdf60eb115f9da3cfadb7033831d83b7
+      size: 13147
+    params:
+      figures/params.yaml:
+        frontier_models: GPT-5.5,Opus 4.6
+        multiverse:
+          weightings:
+          - equal_task_weight
+          - invsqrt_task_weight
+          regularizations:
+          - 0.2
+          - 0.1
+          - 0.02
+          - 0.01
+          - 0.001
+          - 1e-05
+          n_samples: 1000
+    outs:
+    - path: figures/data/sensitivity/combined_multiverse_records.json
+      hash: md5
+      md5: 4f421af84f2e2583a5b21d89c18274e3
+      size: 4080987
+  sensitivity_multiverse_2024plus:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.sensitivity_multiverse --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --sensitivity-dir 
+      figures/data/sensitivity --n-samples 1000 --model-date-cutoff 2024-01-01 
+      --frontier-model "GPT-5.5,Opus 4.6" --output 
+      figures/data/sensitivity/multiverse_records_2024plus.json
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/sensitivity/multiverse_records.json
+      hash: md5
+      md5: e5d395309635b592a6a44089d4951eb5
+      size: 3762468
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/sensitivity_multiverse.py
+      hash: md5
+      md5: a27c1b1024e9ab5a1fcce1f2c9e0cb58
+      size: 13000
+    params:
+      figures/params.yaml:
+        frontier_models: GPT-5.5,Opus 4.6
+        multiverse:
+          weightings:
+          - equal_task_weight
+          - invsqrt_task_weight
+          regularizations:
+          - 0.2
+          - 0.1
+          - 0.02
+          - 0.01
+          - 0.001
+          - 1e-05
+          n_samples: 1000
+    outs:
+    - path: figures/data/sensitivity/multiverse_records_2024plus.json
+      hash: md5
+      md5: 3f1adcde15b041d50250115c14a8d9b3
+      size: 3762830
+  sensitivity_combined_multiverse_2024plus:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.sensitivity_combined_multiverse --source-records 
+      figures/data/sensitivity/multiverse_records_2024plus.json --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --n-samples 1000 
+      --model-date-cutoff 2024-01-01 --frontier-model "GPT-5.5,Opus 4.6" 
+      --output 
+      figures/data/sensitivity/combined_multiverse_records_2024plus.json
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/sensitivity/multiverse_records_2024plus.json
+      hash: md5
+      md5: 3f1adcde15b041d50250115c14a8d9b3
+      size: 3762830
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/sensitivity_combined_multiverse.py
+      hash: md5
+      md5: cdf60eb115f9da3cfadb7033831d83b7
+      size: 13147
+    params:
+      figures/params.yaml:
+        frontier_models: GPT-5.5,Opus 4.6
+        multiverse:
+          weightings:
+          - equal_task_weight
+          - invsqrt_task_weight
+          regularizations:
+          - 0.2
+          - 0.1
+          - 0.02
+          - 0.01
+          - 0.001
+          - 1e-05
+          n_samples: 1000
+    outs:
+    - path: figures/data/sensitivity/combined_multiverse_records_2024plus.json
+      hash: md5
+      md5: e021cd2570e15f9a958fc66fcad06263
+      size: 4081977
+  sensitivity_comparison:
+    cmd: python -m figures.stages.sensitivity_comparison --sensitivity-dir 
+      figures/data/sensitivity --headline-trendline 
+      figures/data/trendline_params_human_2M.json --headline-summaries 
+      figures/data/model_summaries_human_2M.parquet --output 
+      figures/out/sensitivity_comparison.json
+    deps:
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 00014d991545abdd00a8d5816f889e31
+      size: 10831
+    - path: figures/data/sensitivity
+      hash: md5
+      md5: 846980fc62a9bc5e4c6dafed3233dc23.dir
+      size: 16856338
+      nfiles: 52
+    - path: figures/data/trendline_params_human_2M.json
+      hash: md5
+      md5: ef4a7cc1986c8633dc04931c1e19f766
+      size: 965
+    outs:
+    - path: figures/out/sensitivity_comparison.json
+      hash: md5
+      md5: b91175b14004281533ef550e1ebc00d4
+      size: 14977
+  plot_sensitivity_multiverse:
+    cmd: python -m figures.stages.plot_sensitivity_multiverse --records 
+      figures/data/sensitivity/multiverse_records.json --output 
+      figures/out/sensitivity_multiverse_boxplot.png
+    deps:
+    - path: figures/data/sensitivity/multiverse_records.json
+      hash: md5
+      md5: e5d395309635b592a6a44089d4951eb5
+      size: 3762468
+    params:
+      figures/params.yaml:
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/sensitivity_multiverse_boxplot.png
+      hash: md5
+      md5: d8398b691cd91bca898009b71b68cb95
+      size: 402835
+  plot_sensitivity_combined_multiverse:
+    cmd: python -m figures.stages.plot_sensitivity_multiverse --records 
+      figures/data/sensitivity/combined_multiverse_records.json --output 
+      figures/out/sensitivity_combined_multiverse.png
+    deps:
+    - path: figures/data/sensitivity/combined_multiverse_records.json
+      hash: md5
+      md5: 4f421af84f2e2583a5b21d89c18274e3
+      size: 4080987
+    params:
+      figures/params.yaml:
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/sensitivity_combined_multiverse.png
+      hash: md5
+      md5: a71478a5b72d0d7ace0bc10e91cc4e9e
+      size: 278160
+  table_datasets:
+    cmd: python -m figures.stages.table_datasets --task-difficulties 
+      figures/data/task_difficulties.parquet --model-runs 
+      figures/data/model_runs.parquet --output figures/data/datasets_table.json
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 7c01b2e6a2a92a7d38e8929f4b56e236
+      size: 59850
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: figures/stages/table_datasets.py
+      hash: md5
+      md5: 44da577897e8ba32b814fd0b6f864baf
+      size: 8573
+    outs:
+    - path: figures/data/datasets_table.json
+      hash: md5
+      md5: 13f44311ed313067b284c87fc327757e
+      size: 5823
+  paper_stats:
+    cmd: python -m figures.stages.paper_stats --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --summaries 
+      figures/data/model_summaries_human_2M.parquet --summaries-10m 
+      figures/data/model_summaries_human_2M_gpt53_10M.parquet 
+      --summaries-model-est figures/data/model_summaries_runs_2M.parquet 
+      --trendline figures/data/trendline_params_human_2M.json --human-snapshot 
+      figures/data/human_snapshot.json --token-subset-chart 
+      figures/out/charts/token_subset_analysis.json --regularisation-chart 
+      figures/data/regularisation_comparison.json --ten-m-cache 
+      ../data/keep/10m_samples.pkl --token-budget-chart 
+      figures/out/charts/token_budget_sensitivity.json 
+      --token-budget-extended-chart 
+      figures/out/charts/token_budget_extended_10m.json --trendline-alt-chart 
+      figures/out/charts/trendline_alternatives.json --os-trendline-chart 
+      figures/out/charts/os_main_trendline.json --params figures/params.yaml 
+      --output figures/data/paper_stats.json
+    deps:
+    - path: ../data/keep/10m_samples.pkl
+      hash: md5
+      md5: cec2b1b293c2f130ce21439dc1137842
+      size: 3754
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 5df98893082f1f5231b26d63c798c4fd
+      size: 313784
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 86a0a460fe2dd394fbc0f1db3dfe5319
+      size: 10723
+    - path: figures/data/model_summaries_human_2M_gpt53_10M.parquet
+      hash: md5
+      md5: 37e1062511c355985a3ed5103e260ef6
+      size: 10723
+    - path: figures/data/model_summaries_runs_2M.parquet
+      hash: md5
+      md5: b3396c830989fc985382f30f0612c21b
+      size: 10725
+    - path: figures/data/regularisation_comparison.json
+      hash: md5
+      md5: 2b8b871a2420a65d79284d3c16311e0f
+      size: 5896
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/data/trendline_params_human_2M.json
+      hash: md5
+      md5: 23ba359f5bf01ed4b344547de65e898c
+      size: 933
+    - path: figures/out/charts/os_main_trendline.json
+      hash: md5
+      md5: e5e27cddee8d059aee0c76a5a258588f
+      size: 196312
+    - path: figures/out/charts/token_budget_extended_10m.json
+      hash: md5
+      md5: 1897646180abae7e473ab895a221e132
+      size: 5201
+    - path: figures/out/charts/token_budget_sensitivity.json
+      hash: md5
+      md5: e90a331ceb250ec8a298a7afbbeb8708
+      size: 3667
+    - path: figures/out/charts/token_subset_analysis.json
+      hash: md5
+      md5: f2de2249b6fc431b40980669357d19e7
+      size: 10283
+    - path: figures/out/charts/trendline_alternatives.json
+      hash: md5
+      md5: 0e9b77732090e799f51456d025b3d496
+      size: 291715
+    - path: figures/stages/paper_stats.py
+      hash: md5
+      md5: c23bddfa41a432610f63c13e69a2277a
+      size: 28795
+    params:
+      figures/params.yaml:
+        projections:
+          pentest_webapp_days: 5–8
+          pentest_infra_days: 5–15
+          pentest_redteam_days: 20+
+          fullday_hours: 8
+          multiday_hours: 40
+          redteam_hours: 160
+    outs:
+    - path: figures/data/paper_stats.json
+      hash: md5
+      md5: 73d71e4602bd96e616b282d2f0418498
+      size: 7740
+  plot_icc_gauge:
+    cmd: python -m figures.stages.plot_icc_gauge --human-snapshot 
+      figures/data/human_snapshot.json --task-difficulties 
+      figures/data/task_difficulties.parquet --model-runs 
+      figures/data/model_runs.parquet --output figures/out/icc_gauge.png
+    deps:
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 5df98893082f1f5231b26d63c798c4fd
+      size: 313784
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/plot_icc_gauge.py
+      hash: md5
+      md5: afc8101be63f77d5d6d30757ee302bbc
+      size: 7471
+    params:
+      figures/params.yaml:
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/icc_gauge.png
+      hash: md5
+      md5: 92ef4d3878382f68ac08377be06ce5a6
+      size: 85305
+  plot_icc_agreement:
+    cmd: python -m figures.stages.plot_icc_agreement --human-snapshot 
+      figures/data/human_snapshot.json --task-difficulties 
+      figures/data/task_difficulties.parquet --model-runs 
+      figures/data/model_runs.parquet --output figures/out/icc_agreement.png
+    deps:
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 5df98893082f1f5231b26d63c798c4fd
+      size: 313784
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/plot_icc_agreement.py
+      hash: md5
+      md5: 7999cb3a0b72ad4786e0b7e72dbbfe9d
+      size: 18485
+    params:
+      figures/params.yaml:
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/icc_agreement.png
+      hash: md5
+      md5: 3e439befe5fcbc115c4358656bf94e24
+      size: 268964
+  plot_cross_source:
+    cmd: python -m figures.stages.plot_cross_source --human-snapshot 
+      figures/data/human_snapshot.json --best-available 
+      figures/data/best_available_times.json --task-difficulties 
+      figures/data/task_difficulties.parquet --model-runs 
+      figures/data/model_runs.parquet --output figures/out/cross_source_grid.png
+    deps:
+    - path: figures/data/best_available_times.json
+      hash: md5
+      md5: f7b8cca1e0ddcc7e10dec1fa7f59fd26
+      size: 27741
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 5df98893082f1f5231b26d63c798c4fd
+      size: 313784
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/plot_cross_source.py
+      hash: md5
+      md5: b50e780de3fdf7e9514dcbd30d4d1533
+      size: 27954
+    params:
+      figures/params.yaml:
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/cross_source_grid.png
+      hash: md5
+      md5: 8135d2709182663ffb817a0af9e725a2
+      size: 1049758
+  plot_source_coverage:
+    cmd: python -m figures.stages.plot_source_coverage --task-difficulties 
+      figures/data/task_difficulties.parquet --model-runs 
+      figures/data/model_runs.parquet --human-snapshot 
+      figures/data/human_snapshot.json --output figures/out/source_coverage.png
+    deps:
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 5df98893082f1f5231b26d63c798c4fd
+      size: 313784
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/plot_source_coverage.py
+      hash: md5
+      md5: 56c7eb704199ac56c1d015cb5ca296dd
+      size: 18830
+    params:
+      figures/params.yaml:
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/source_coverage.png
+      hash: md5
+      md5: f7bb22224465e2e3802965a31d89b831
+      size: 209648
+  os_main_trendline:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.plot_os_trendline --summaries 
+      figures/data/model_summaries_human_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --output 
+      figures/out/os_main_trendline.png
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: e267cca476a9fde3a303da0acd2e4870
+      size: 284214
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 86a0a460fe2dd394fbc0f1db3dfe5319
+      size: 10723
+    - path: figures/stages/_common_data.py
+      hash: md5
+      md5: 4b7fb8de7de4a69ee2ed2e251b129ea7
+      size: 1511
+    - path: figures/stages/plot_os_trendline.py
+      hash: md5
+      md5: 6aebe5dc6a7220b5fe0eff030243e677
+      size: 20061
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        os_models:
+          open_weight:
+          - GLM-5
+          - DeepSeek V3.1
+          comparison_set:
+          - GLM-5
+          - DeepSeek V3.1
+          - o3
+          - Opus 4
+          - GPT-5.3 Codex
+          - Opus 4.6
+          frontier_for_gap:
+          - GPT-5.3 Codex
+          - Opus 4.6
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/os_main_trendline.png
+      hash: md5
+      md5: cb2bd94af310d9bc99b2b2fbd0b98bb4
+      size: 323284
+  os_main_trendline_zoomed:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.plot_os_trendline --summaries 
+      figures/data/model_summaries_human_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --x-lim-start "2024-01-01" 
+      --x-lim-end "2026-07-01" --output figures/out/os_main_trendline_zoomed.png
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: e267cca476a9fde3a303da0acd2e4870
+      size: 284214
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 86a0a460fe2dd394fbc0f1db3dfe5319
+      size: 10723
+    - path: figures/stages/_common_data.py
+      hash: md5
+      md5: 4b7fb8de7de4a69ee2ed2e251b129ea7
+      size: 1511
+    - path: figures/stages/plot_os_trendline.py
+      hash: md5
+      md5: 6aebe5dc6a7220b5fe0eff030243e677
+      size: 20061
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        os_models:
+          open_weight:
+          - GLM-5
+          - DeepSeek V3.1
+          comparison_set:
+          - GLM-5
+          - DeepSeek V3.1
+          - o3
+          - Opus 4
+          - GPT-5.3 Codex
+          - Opus 4.6
+          frontier_for_gap:
+          - GPT-5.3 Codex
+          - Opus 4.6
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/out/os_main_trendline_zoomed.png
+      hash: md5
+      md5: 45a5d6d03acdde7b856459821fde9bb5
+      size: 259163
+  os_trendline_buffer:
+    cmd: python -m figures.stages.plot_os_irt --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --summaries 
+      figures/data/model_summaries_human_2M.parquet --figure trendline_buffer 
+      --output figures/out/os_trendline_buffer.png
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 86a0a460fe2dd394fbc0f1db3dfe5319
+      size: 10723
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/_common_data.py
+      hash: md5
+      md5: 4b7fb8de7de4a69ee2ed2e251b129ea7
+      size: 1511
+    - path: figures/stages/plot_os_irt.py
+      hash: md5
+      md5: 2bd0e7998b61b62a545742a9fb767a7a
+      size: 9252
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    - path: lib/irt.py
+      hash: md5
+      md5: d377e7dbb8d7acf45049adece81218c6
+      size: 68467
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        os_models:
+          open_weight:
+          - GLM-5
+          - DeepSeek V3.1
+          comparison_set:
+          - GLM-5
+          - DeepSeek V3.1
+          - o3
+          - Opus 4
+          - GPT-5.3 Codex
+          - Opus 4.6
+          frontier_for_gap:
+          - GPT-5.3 Codex
+          - Opus 4.6
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/os_trendline_buffer.png
+      hash: md5
+      md5: a1a8af3354b83ef9cdf0ff90c3818868
+      size: 403948
+  os_scurve_overlay:
+    cmd: python -m figures.stages.plot_os_irt --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --figure scurve_overlay --output 
+      figures/out/os_scurve_overlay.png
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/plot_os_irt.py
+      hash: md5
+      md5: 2bd0e7998b61b62a545742a9fb767a7a
+      size: 9252
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    - path: lib/irt.py
+      hash: md5
+      md5: d377e7dbb8d7acf45049adece81218c6
+      size: 68467
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        os_models:
+          open_weight:
+          - GLM-5
+          - DeepSeek V3.1
+          comparison_set:
+          - GLM-5
+          - DeepSeek V3.1
+          - o3
+          - Opus 4
+          - GPT-5.3 Codex
+          - Opus 4.6
+          frontier_for_gap:
+          - GPT-5.3 Codex
+          - Opus 4.6
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/os_scurve_overlay.png
+      hash: md5
+      md5: e7617c5ffce6d2376ff86099032df677
+      size: 367419
+  os_gap_by_difficulty:
+    cmd: python -m figures.stages.plot_os_irt --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --figure gap_by_difficulty --output 
+      figures/out/os_gap_by_difficulty.png
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/plot_os_irt.py
+      hash: md5
+      md5: 2bd0e7998b61b62a545742a9fb767a7a
+      size: 9252
+    - path: lib/data.py
+      hash: md5
+      md5: 23ccefbb6cfab32d75995bbe9dcfc654
+      size: 16495
+    - path: lib/irt.py
+      hash: md5
+      md5: d377e7dbb8d7acf45049adece81218c6
+      size: 68467
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        os_models:
+          open_weight:
+          - GLM-5
+          - DeepSeek V3.1
+          comparison_set:
+          - GLM-5
+          - DeepSeek V3.1
+          - o3
+          - Opus 4
+          - GPT-5.3 Codex
+          - Opus 4.6
+          frontier_for_gap:
+          - GPT-5.3 Codex
+          - Opus 4.6
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/os_gap_by_difficulty.png
+      hash: md5
+      md5: ac99a5b5e81e6b7f9c74db8d99f0f206
+      size: 227603
+  os_benchmark_comparison:
+    cmd: python -m figures.stages.plot_os_irt --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --figure benchmark_comparison --output 
+      figures/out/os_benchmark_comparison.png
+    deps:
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/plot_os_irt.py
+      hash: md5
+      md5: 2bd0e7998b61b62a545742a9fb767a7a
+      size: 9252
+    - path: lib/data.py
+      hash: md5
+      md5: 695ce4be19cbeec62f08eab541cb09b3
+      size: 16492
+    - path: lib/irt.py
+      hash: md5
+      md5: d377e7dbb8d7acf45049adece81218c6
+      size: 68467
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        os_models:
+          open_weight:
+          - GLM-5
+          - DeepSeek V3.1
+          comparison_set:
+          - GLM-5
+          - DeepSeek V3.1
+          - o3
+          - Opus 4
+          - GPT-5.3 Codex
+          - Opus 4.6
+          frontier_for_gap:
+          - GPT-5.3 Codex
+          - Opus 4.6
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/os_benchmark_comparison.png
+      hash: md5
+      md5: 8e25e3c7cc179eb8c293a04db4ab4a8b
+      size: 129647
+  plot_sensitivity_dual:
+    cmd: python -m figures.stages.plot_sensitivity_dual --records 
+      figures/data/sensitivity/combined_multiverse_records.json 
+      --records-2024plus 
+      figures/data/sensitivity/combined_multiverse_records_2024plus.json 
+      --source-records figures/data/sensitivity/multiverse_records.json 
+      --frontier-label "GPT-5.3 Codex,Opus 4.6" --stats-output 
+      figures/data/sensitivity_dual.json --output 
+      figures/out/sensitivity_dual.png --output-p50 
+      figures/out/sensitivity_p50.png
+    deps:
+    - path: figures/data/sensitivity/combined_multiverse_records.json
+      hash: md5
+      md5: 30e9fdc320b805b93b599e7e81d14ce8
+      size: 4273517
+    - path: figures/data/sensitivity/combined_multiverse_records_2024plus.json
+      hash: md5
+      md5: d295c3adae32ea6e87e882e6d1e1378a
+      size: 4275340
+    - path: figures/data/sensitivity/multiverse_records.json
+      hash: md5
+      md5: 20daf527d64798d1d9d53851cd3b5775
+      size: 3942224
+    - path: figures/stages/plot_sensitivity_dual.py
+      hash: md5
+      md5: 8eb3dbc29034ffea0d508c154d313c8a
+      size: 26470
+    params:
+      figures/params.yaml:
+        frontier_models: GPT-5.3 Codex,Opus 4.6
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/data/sensitivity_dual.json
+      hash: md5
+      md5: b01f950637f1259419a90728e4b0f9be
+      size: 3395
+    - path: figures/out/sensitivity_dual.png
+      hash: md5
+      md5: 2baef5ae5d394f3f258aede51e13e132
+      size: 172708
+    - path: figures/out/sensitivity_p50.png
+      hash: md5
+      md5: 787bd72269a59936e1eb8bbcab9dd770
+      size: 191101
+  plot_trendline_alternatives:
+    cmd: DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python -m 
+      figures.stages.plot_trendline_alternatives --model-runs 
+      figures/data/model_runs.parquet --task-difficulties 
+      figures/data/task_difficulties.parquet --difficulty-col 
+      best_available_minutes --summaries 
+      figures/data/model_summaries_human_2M.parquet --bootstrap 
+      figures/data/bootstrap/runs_human_2M.parquet --stats-output 
+      figures/data/trendline_alternatives.json --output 
+      figures/out/trendline_alternatives.png
+    deps:
+    - path: figures/data/bootstrap/runs_human_2M.parquet
+      hash: md5
+      md5: db471958b34238a5e4cca64aeeb224bc
+      size: 284214
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: 533ac74b0f2e777aed8255123ea3d9d9
+      size: 57778
+    - path: figures/data/model_summaries_human_2M.parquet
+      hash: md5
+      md5: 2e591026fc2fa0effb1692d29826bf72
+      size: 10709
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: 9bc53de01ded8f322d90e9c4e02db712
+      size: 23052
+    - path: lib/irt.py
+      hash: md5
+      md5: d377e7dbb8d7acf45049adece81218c6
+      size: 68467
+    - path: lib/trendline.py
+      hash: md5
+      md5: 15de0c5419f8c7b0a1b232b97305702b
+      size: 26027
+    params:
+      figures/params.yaml:
+        irt:
+          regularization: 1e-05
+          weighting: invsqrt_task_weight
+          success_percents:
+          - 50
+          - 80
+          confidence_level: 0.95
+          min_n: 5
+        output:
+          dpi: 300
+          format: png
+        trendline:
+          x_lim_start: '2019-06-01'
+          x_lim_end: '2026-07-01'
+    outs:
+    - path: figures/data/trendline_alternatives.json
+      hash: md5
+      md5: 0d7c5755948d82eb1faced756e74c78e
+      size: 823
+    - path: figures/out/trendline_alternatives.png
+      hash: md5
+      md5: 4b769a732c62ae8773ad71d1c126f07a
+      size: 1295225
+  plot_source_coverage_k2:
+    cmd: python -m figures.stages.plot_source_coverage --task-difficulties 
+      figures/data/task_difficulties.parquet --model-runs 
+      figures/data/model_runs.parquet --human-snapshot 
+      figures/data/human_snapshot.json --show-k2 --output 
+      figures/out/source_coverage_k2.png
+    deps:
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 5df98893082f1f5231b26d63c798c4fd
+      size: 313784
+    - path: figures/data/model_runs.parquet
+      hash: md5
+      md5: f55964052a214e15d4ecfb309b178eca
+      size: 57681
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/plot_source_coverage.py
+      hash: md5
+      md5: 56c7eb704199ac56c1d015cb5ca296dd
+      size: 18830
+    params:
+      figures/params.yaml:
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/source_coverage_k2.png
+      hash: md5
+      md5: d91459a56ee809f693c61d548f0bd3e2
+      size: 245448
+  plot_expert_effort:
+    cmd: python -m figures.stages.plot_expert_effort --human-snapshot 
+      figures/data/human_snapshot.json --best-available 
+      figures/data/best_available_times.json --task-difficulties 
+      figures/data/task_difficulties.parquet --output 
+      figures/out/expert_effort.png
+    deps:
+    - path: figures/data/best_available_times.json
+      hash: md5
+      md5: f7b8cca1e0ddcc7e10dec1fa7f59fd26
+      size: 27741
+    - path: figures/data/human_snapshot.json
+      hash: md5
+      md5: 5df98893082f1f5231b26d63c798c4fd
+      size: 313784
+    - path: figures/data/task_difficulties.parquet
+      hash: md5
+      md5: de5173939e248c9e6ef0d2f7aa35f53e
+      size: 23052
+    - path: figures/stages/plot_expert_effort.py
+      hash: md5
+      md5: 6fdbf150bce9e17b2e8cb55117b7e457
+      size: 8250
+    params:
+      figures/params.yaml:
+        output:
+          dpi: 300
+          format: png
+    outs:
+    - path: figures/out/expert_effort.png
+      hash: md5
+      md5: 41647aaa149cac1fe6793820e806f08f
+      size: 115983

@@ -1,0 +1,9 @@
+{
+  "mode": "horizon_only",
+  "include_trendline": false,
+  "n_campaign_tasks": 14,
+  "trendline_min_campaign_tasks": 50,
+  "campaign_aliases": [
+    "Small Qwen"
+  ]
+}
