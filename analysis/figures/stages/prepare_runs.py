@@ -33,7 +33,7 @@ from lib.data import (  # noqa: E402
     load_cybench_first_blood,
     load_model_time_estimates,
 )
-from lib.eval_sets import SMALL_QWEN_EVAL_SETS  # noqa: E402
+from lib.eval_sets import GIGACHAT_ULTRA_EVAL_SETS  # noqa: E402
 from lib.corrections import EXCLUDED_SESSIONS  # noqa: E402
 from lib.outliers import OutlierRegistry  # noqa: E402
 from lib.results import load_campaign_runs, load_legacy_runs  # noqa: E402
@@ -55,9 +55,9 @@ TRENDLINE_MIN_CAMPAIGN_TASKS = 50
 # Custom-only campaign list for this checkout.
 CAMPAIGNS = [
     {
-        "eval_sets": SMALL_QWEN_EVAL_SETS,
-        "agent": "together/Qwen/Small-Qwen",
-        "alias": "Small Qwen",
+        "eval_sets": GIGACHAT_ULTRA_EVAL_SETS,
+        "agent": "openai-api/gigachat/gigachat-ultra",
+        "alias": "GigaChat Ultra 3.5",
     },
 ]
 

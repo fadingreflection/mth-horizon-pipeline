@@ -62,13 +62,13 @@
       "alias": "DeepSeek V3.1"
     },
     {
-      "provider": "together",
-      "model_name": "Qwen/Small-Qwen",
-      "full_name": "together/Qwen/Small-Qwen",
-      "release_date": "2025-01-01",
+      "provider": "gigachat",
+      "model_name": "gigachat-ultra",
+      "full_name": "openai-api/gigachat/gigachat-ultra",
+      "release_date": "2026-06-06",
       "max_output_tokens": 32768,
-      "description": "Local custom Small Qwen campaign (placeholder id). Logs in eval-set-my-custom-model.",
-      "alias": "Small Qwen"
+      "description": "Local GigaChat Ultra 3.5 campaign. Logs in eval-set-gigachat-ultra.",
+      "alias": "GigaChat Ultra 3.5"
     }
   ]
 }

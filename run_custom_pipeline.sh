@@ -12,7 +12,7 @@
 #   FORCE_TRENDLINE=0  — never run trendline stages
 set -euo pipefail
 
-REPO="/home/afedotova/mth_pipeline/cyber-task-horizons-data"
+REPO="/home/fedotova/mth-horizon-pipeline"
 PY="$REPO/.venv/bin/python"
 export PYTHONPATH="$REPO${PYTHONPATH:+:$PYTHONPATH}"
 cd "$REPO"
@@ -77,7 +77,7 @@ force = os.environ.get("FORCE_TRENDLINE")
 if force is not None and force != "":
     print("1" if force == "1" else "0")
 else:
-    p = Path("/home/afedotova/mth_pipeline/cyber-task-horizons-data/analysis/figures/data/horizon_mode.json")
+    p = Path("/home/fedotova/mth-horizon-pipeline/analysis/figures/data/horizon_mode.json")
     info = json.loads(p.read_text())
     print("1" if info.get("include_trendline") else "0")
 PY
@@ -107,7 +107,7 @@ echo "=== DONE: horizon summary ==="
 import json
 import pandas as pd
 from pathlib import Path
-base = Path("/home/afedotova/mth_pipeline/cyber-task-horizons-data/analysis/figures/data")
+base = Path("/home/fedotova/mth-horizon-pipeline/analysis/figures/data")
 mode = json.loads((base / "horizon_mode.json").read_text())
 print("horizon_mode:", json.dumps(mode, indent=2))
 df = pd.read_parquet(base / "model_runs.parquet")
@@ -128,7 +128,7 @@ if mode.get("include_trendline"):
     if tp.exists():
         print("\ntrendline_params:")
         print(json.dumps(json.loads(tp.read_text()), indent=2)[:2000])
-    out = Path("/home/afedotova/mth_pipeline/cyber-task-horizons-data/analysis/figures/out")
+    out = Path("/home/fedotova/mth-horizon-pipeline/analysis/figures/out")
     print("\nhorizon figures:")
     for p in sorted(out.glob("trendline_p50_runs_human_2M*")):
         print(" ", p)

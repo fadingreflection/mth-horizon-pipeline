@@ -9,11 +9,11 @@ prepare_runs imports only what this checkout actually runs.
 """
 
 # ---------------------------------------------------------------------------
-# Small Qwen — local custom campaign (cybergym only)
-# Logs: data/eval_logs/eval-set-my-custom-model/*.eval
+# GigaChat Ultra 3.5 — local custom campaign (cybergym only)
+# Logs: data/eval_logs/eval-set-gigachat-ultra/*.eval
 # ---------------------------------------------------------------------------
-SMALL_QWEN_EVAL_SETS = {
+GIGACHAT_ULTRA_EVAL_SETS = {
     "cybergym": [
-        "eval-set-my-custom-model",
+        "eval-set-gigachat-ultra",
     ],
 }
