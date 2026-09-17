@@ -41,7 +41,7 @@ stages:
       - lib/trendline.py
       - figures/data/human_snapshot.json
       # Track the custom eval-set directory so dvc repro picks up new logs.
-      - ../data/eval_logs/eval-set-my-custom-model
+      - ../data/eval_logs/eval-set-gigachat-ultra
     params:
       - figures/params.yaml:
         - irt.regularization
